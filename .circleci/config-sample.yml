@@ -38,9 +38,9 @@ commands:
             #  Add revert code here. You can find this in the Getting Started section.
               exit 1
             fi
-            
+
 jobs:
-  build-frontend:
+  build-frontend:                       #build frontend
     docker:
       - image: circleci/node:13.8.0
     steps:
@@ -58,7 +58,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
 
-  build-backend:
+  build-backend:                        #build backend
     docker:
       - image: circleci/node:13.8.0
     steps:
@@ -82,7 +82,7 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
-                
+
   test-backend:
     docker:
       # Docker image here
@@ -90,7 +90,7 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
-            
+
   scan-frontend:
     docker:
       # Docker image here
@@ -197,7 +197,7 @@ jobs:
           command: |
             # your code here
       # Here's where you will add some code to rollback on failure      
-                    
+
   deploy-backend:
     docker:
       # Docker image here that supports Ansible
@@ -271,14 +271,13 @@ jobs:
             then
               # your code here
             fi
-            
 
 workflows:
   default:
     jobs:
       - build-frontend
       - build-backend
-'      # - test-frontend:
+      # - test-frontend:
       #     requires: [build-frontend]
       # - test-backend:
       #     requires: [build-backend]
