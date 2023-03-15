@@ -38,7 +38,7 @@ commands:
             #  Add revert code here. You can find this in the Getting Started section.
               exit 1
             fi
-            
+
 jobs:
   build-frontend:
     docker:
@@ -82,7 +82,7 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
-                
+
   test-backend:
     docker:
       # Docker image here
@@ -90,7 +90,7 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
-            
+
   scan-frontend:
     docker:
       # Docker image here
@@ -197,7 +197,7 @@ jobs:
           command: |
             # your code here
       # Here's where you will add some code to rollback on failure      
-                    
+
   deploy-backend:
     docker:
       # Docker image here that supports Ansible
@@ -253,7 +253,7 @@ jobs:
             # your code here
       # Here's where you will add some code to rollback on failure  
 
-cleanup:
+  cleanup:
     docker:
       # Docker image here
     steps:
@@ -271,7 +271,6 @@ cleanup:
             then
               # your code here
             fi
-            
 
 workflows:
   default:
