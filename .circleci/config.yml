@@ -197,7 +197,7 @@ jobs:
 
   run-migrations:
     docker: 
-      - image: mareimorsy/aws-node
+      - image: mohamedemadeldin/aws-node
 
     steps:
       - checkout
@@ -231,7 +231,7 @@ workflows:
       #     filters:
       #       branches:
       #         only: [master]
-      # - configure-infrastructure:
-      #     # requires: [deploy-infrastructure]
-        - run-migrations
-      #     requires: [configure-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
