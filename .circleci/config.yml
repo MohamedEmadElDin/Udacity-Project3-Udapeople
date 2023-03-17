@@ -182,6 +182,10 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["27:2c:8d:60:ff:ed:a6:18:cd:17:9a:4b:cb:73:3f:87"]
+      - run:
+          name: "Install Dependencies"
+          command: |
+            apk add ansible gzip openssh-client
       - attach_workspace:
           at: ~/
       - run:
@@ -230,7 +234,7 @@ workflows:
       #     filters:
       #       branches:
       #         only: [master]
-      # - configure-infrastructure
+      - configure-infrastructure
       #     # requires: [deploy-infrastructure]
       - run-migrations
-          # requires: [configure-infrastructure]
+          requires: [configure-infrastructure]
