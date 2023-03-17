@@ -212,7 +212,6 @@ jobs:
             npm run migrations
         # Here's where you will add some code to rollback on failure 
 
-
 workflows:
   default:
     jobs:
