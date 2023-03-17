@@ -192,12 +192,12 @@ jobs:
             'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> inventory.txt
             cat inventory.txt
-            ansible-playbook -i inventory.txt configure-server.yml -vv
+            ansible-playbook -i inventory.txt configure-server.yml
       # Here's where you will add some code to rollback on failure   
 
   run-migrations:
     docker: 
-      - image: circleci/node:13.8.0
+      - image: mohamedemadeldin/aws-node
 
     steps:
       - checkout
@@ -230,7 +230,7 @@ workflows:
       #     filters:
       #       branches:
       #         only: [master]
-      # - configure-infrastructure
+      - configure-infrastructure
       #     # requires: [deploy-infrastructure]
-      - run-migrations
-          # requires: [configure-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
