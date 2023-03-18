@@ -202,7 +202,7 @@ jobs:
 
   run-migrations:
     docker: 
-      - image: mareimorsy/aws-node
+      - image: mohamedemadeldin/aws-node
 
     steps:
       - checkout
@@ -213,6 +213,7 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             cd backend
             npm install
+            npm  run build -prod
             npm run premigrations
             npm run migrations
       # - run:
