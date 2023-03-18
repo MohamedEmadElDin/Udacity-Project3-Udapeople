@@ -214,6 +214,7 @@ jobs:
             cd backend
             npm install
             npm update
+            npm audit
             npm run premigrations
             npm run migrations
       # - run:
