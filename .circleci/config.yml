@@ -214,7 +214,7 @@ jobs:
             cd backend
             npm install
             npm update
-            npm audit
+            npm audit --force --audit-level=critical
             npm run premigrations
             npm run migrations
       # - run:
