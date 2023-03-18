@@ -205,7 +205,7 @@ jobs:
 
     steps:
       - checkout
-      - run:c
+      - run:
           name: Run migrations
           command: |
             export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 \
