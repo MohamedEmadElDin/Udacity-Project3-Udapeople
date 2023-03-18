@@ -213,7 +213,7 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             cd backend
             npm install
-            npm audit fix
+            npm audit fix --force
             npm run premigrations
             npm run migrations
       # - run:
