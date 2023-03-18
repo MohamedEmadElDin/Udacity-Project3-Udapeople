@@ -251,11 +251,11 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: mareimorsy/aws-node
+      - image: mohamedemadeldin/aws-node
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["0d:a0:d2:30:e7:40:31:70:0e:69:45:04:ad:36:0b:8c"]
+          fingerprints: ["27:2c:8d:60:ff:ed:a6:18:cd:17:9a:4b:cb:73:3f:87"]
       - run:
           name: Deploy backend
           command: |
@@ -306,5 +306,5 @@ workflows:
       #     requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      # - deploy-backend
-          # requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
