@@ -202,7 +202,7 @@ jobs:
 
   run-migrations:
     docker: 
-      - image: mohamedemadeldin/aws-node
+      - image: mareimorsy/aws-node
 
     steps:
       - checkout
