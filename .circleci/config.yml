@@ -227,21 +227,25 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: mareimorsy/aws-node
+      - image: mohamedemadeldin/aws-node
     steps:
       - checkout
       - run:
           name: Deploy Frontend
           command: |
             export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            echo "API_URL=http://$BACKEND_PUBLIC_IP:3030" 
-            # Build the frontend
-            cd frontend
-            echo "API_URL=http://$BACKEND_PUBLIC_IP:3030" > .env
-            npm install
-            npm run build:prod
-            # aws s3 sync dist s3://udapeople-project
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
+            # echo "API_URL=http://$BACKEND_PUBLIC_IP:3030" 
+            # # Build the frontend
+            # cd frontend
+            # echo "API_URL=http://$BACKEND_PUBLIC_IP:3030" > .env
+            # npm install
+            # npm run build:prod
+            # # aws s3 sync dist s3://udapeople-project
+            # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
 
   deploy-backend:
     docker:
@@ -253,25 +257,29 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            echo $TYPEORM_HOST >> .circleci/ansible/inventory.txt
-            cd backend
-            npm i
+            # export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            # echo $TYPEORM_HOST >> .circleci/ansible/inventory.txt
+            # cd backend
+            # npm i
+            # npm run build
+            # echo "TYPEORM_ENTITIES=./dist/modules/domain/**/*.entity{.ts,.js}" > .env
+            # echo "TYPEORM_HOST=${TYPEORM_HOST}" >> .env
+            # echo "TYPEORM_PORT=${TYPEORM_PORT}" >> .env
+            # echo "TYPEORM_USERNAME=${TYPEORM_USERNAME}" >> .env
+            # echo "TYPEORM_PASSWORD=${TYPEORM_PASSWORD}" >> .env
+            # echo "TYPEORM_DATABASE=${TYPEORM_DATABASE}" >> .env
+            # echo "TYPEORM_MIGRATIONS_DIR=./dist/migrations" >> .env
+            # echo "TYPEORM_MIGRATIONS=./dist/migrations/*.ts" >> .env
+            # tar -czf artifact.tar.gz dist/* package* .env
+            # cp artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/artifact.tar.gz
+            # ls ../.circleci/ansible/roles/deploy/
+            # cd ../.circleci/ansible
+            # ansible-playbook -i inventory.txt deploy-backend.yml
+            cd frontend
+            npm install
             npm run build
-            echo "TYPEORM_ENTITIES=./dist/modules/domain/**/*.entity{.ts,.js}" > .env
-            echo "TYPEORM_HOST=${TYPEORM_HOST}" >> .env
-            echo "TYPEORM_PORT=${TYPEORM_PORT}" >> .env
-            echo "TYPEORM_USERNAME=${TYPEORM_USERNAME}" >> .env
-            echo "TYPEORM_PASSWORD=${TYPEORM_PASSWORD}" >> .env
-            echo "TYPEORM_DATABASE=${TYPEORM_DATABASE}" >> .env
-            echo "TYPEORM_MIGRATIONS_DIR=./dist/migrations" >> .env
-            echo "TYPEORM_MIGRATIONS=./dist/migrations/*.ts" >> .env
-            tar -czf artifact.tar.gz dist/* package* .env
-            cp artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/artifact.tar.gz
-            ls ../.circleci/ansible/roles/deploy/
-            cd ../.circleci/ansible
-            ansible-playbook -i inventory.txt deploy-backend.yml
-
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 workflows:
   default:
     jobs:
@@ -292,9 +300,9 @@ workflows:
       #         only: [master]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
-      - run-migrations
+      # - run-migrations:
       #     requires: [configure-infrastructure]
-      # - deploy-frontend:
+      - deploy-frontend
       #     requires: [run-migrations]
-      # - deploy-backend
-      #     requires: [run-migrations]
+      - deploy-backend
+          requires: [run-migrations]
