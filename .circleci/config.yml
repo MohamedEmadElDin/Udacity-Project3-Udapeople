@@ -313,9 +313,9 @@ workflows:
       #         only: [master]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
-      - run-migrations
+      # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
       #     requires: [deploy-infrastructure]
-      # - deploy-backend:
+      - deploy-backend
           # requires: [run-migrations]
