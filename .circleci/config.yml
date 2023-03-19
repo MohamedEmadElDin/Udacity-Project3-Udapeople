@@ -287,6 +287,7 @@ jobs:
             # ls ../.circleci/ansible/roles/deploy/
             # cd ../.circleci/ansible
             # ansible-playbook -i inventory.txt deploy-backend.yml
+
             cd backend
             npm i
             npm run build
@@ -311,7 +312,7 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      # - deploy-infrastructure:
+      - deploy-infrastructure
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
       #       branches:
