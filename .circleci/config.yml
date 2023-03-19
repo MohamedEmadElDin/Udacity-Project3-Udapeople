@@ -256,13 +256,12 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["27:2c:8d:60:ff:ed:a6:18:cd:17:9a:4b:cb:73:3f:87"]
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
       - run:
           name: Deploy backend
           command: |
-            # export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 \
-            # --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             echo $TYPEORM_HOST >> .circleci/ansible/inventory.txt
             cd backend
             npm i
