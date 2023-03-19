@@ -144,14 +144,14 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"   
 
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"  
+      # - run:
+      #     name: Ensure front-end infrastructure exist
+      #     command: |
+      #       aws cloudformation deploy \
+      #         --template-file .circleci/files/frontend.yml \
+      #         --tags project=udapeople \
+      #         --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}" \
+      #         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"  
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -215,7 +215,7 @@ jobs:
       #         curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" \
       #         --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
       #         # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
-      #         curl https://kvdb.io/UEsfUpjFvKSJFBvWasVNQN/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+      #         curl https://kvdb.io/UEsfUpjFvKSJFBvWasVNQN/migration_${CIRCLE_WORKFLOW_ID:0:5}  -d '1'
       #       fi
 
   deploy-frontend:
@@ -226,8 +226,7 @@ jobs:
       - run:
           name: Deploy Frontend
           command: |
-            export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
 
             echo "API_URL=http://$BACKEND_PUBLIC_IP:3030" 
@@ -238,16 +237,6 @@ jobs:
             npm run build:prod
             #aws s3 sync dist s3://udapeople-project
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
-            
-
-            # echo "API_URL = ${API_URL}"
-            # echo API_URL="http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
-            # cat frontend/.env
-            # cd frontend
-            # npm install
-            # npm run build
-            # # tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
   deploy-backend:
     docker:
@@ -256,8 +245,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["27:2c:8d:60:ff:ed:a6:18:cd:17:9a:4b:cb:73:3f:87"]
-      # - attach_workspace:
-      #     at: ~/
+
       - run:
           name: Deploy backend
           command: |
@@ -280,19 +268,6 @@ jobs:
             cd ../.circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
 
-            # cd backend
-            # npm i
-            # npm run build
-            # cd ..
-            # # Zip the directory
-            # tar -C backend -czvf artifact.tar.gz .
-            # cp artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/artifact.tar.gz
-            # cd .circleci/ansible
-            # echo "Contents  of the inventory.txt file is -------"
-            # cat inventory.txt
-            # ansible-playbook -i inventory.txt deploy-backend.yml
-
-
 workflows:
   default:
     jobs:
@@ -306,16 +281,16 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      # - deploy-infrastructure:
+      - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       # - deploy-frontend:
       #     requires: [deploy-infrastructure]
-      - deploy-backend
-          # requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
