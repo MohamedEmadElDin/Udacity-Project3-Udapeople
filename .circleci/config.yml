@@ -15,9 +15,9 @@ commands:
           name: Destroy environment
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:5}
-            aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
-            aws cloudformation delete-stack --stack-name frontend-<< parameters.Workflow_ID >>
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}
   notify_on_failure:
       steps:
         - slack/notify:
@@ -276,8 +276,8 @@ jobs:
           command: |
             export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             
-            URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
-            # URL="http://$BACKEND_PUBLICIP:3030/api/status"
+            # URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
+            URL="http://$BACKEND_PUBLICIP:3030/api/status"
             if curl -s --head ${URL}
             then
               echo "It worked!"
@@ -287,7 +287,26 @@ jobs:
               exit 1
             fi
       - notify_on_failure
-      - destroy_environment
+      # - destroy_environment
+
+  cloudfront-update:
+    docker:
+      - image: mohamedemadeldin/aws-node
+    steps:
+      - checkout
+      - run:
+          name: Save Old Workflow ID to kvdb.io
+          command: |
+            export OLD_WORKFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
+            echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
+            curl -k https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:5}" \
+              --stack-name InitialStack
 
 workflows:
   default:
@@ -317,7 +336,7 @@ workflows:
       #     requires: [run-migrations]
       - smoke-test
       #     requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
+      - cloudfront-update:
+          requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
