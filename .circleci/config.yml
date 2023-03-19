@@ -143,14 +143,14 @@ jobs:
           command: |
             yum install -y tar gzip
 
-      - run:
-          name: Ensure back-end infrastructure exists
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
-              --tags project=udapeople \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"   
+      # - run:
+      #     name: Ensure back-end infrastructure exists
+      #     command: |
+      #       aws cloudformation deploy \
+      #         --template-file .circleci/files/backend.yml \
+      #         --tags project=udapeople \
+      #         --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}" \
+      #         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"   
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -209,7 +209,8 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            # export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            # export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             cd backend
             # npm cache clean --force
             npm install
@@ -245,7 +246,7 @@ jobs:
             echo "API_URL=http://$BACKEND_PUBLIC_IP:3030" > .env
             npm install
             npm run build:prod
-            aws s3 sync dist s3://udapeople-project
+            #aws s3 sync dist s3://udapeople-project
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
             
 
@@ -319,7 +320,7 @@ workflows:
       #     requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
-      - deploy-frontend
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
