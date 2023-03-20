@@ -311,6 +311,7 @@ jobs:
             fi
       - notify_on_failure
       - destroy_environment
+      - revert-migrations
 
   cloudfront-update:
     docker:
