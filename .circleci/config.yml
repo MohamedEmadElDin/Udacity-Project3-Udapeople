@@ -305,10 +305,10 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 0
+              exit 1
             else
               echo "Rolling Back"
-              exit 1
+              exit 0
             fi
       - notify_on_failure
       # - destroy_environment
