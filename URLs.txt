@@ -2,13 +2,13 @@
 https://github.com/MohamedEmadElDin/Udacity-Project3-Udapeople.git
 
 [URL02]
-http://udapeople-7bd1b.s3-website-us-east-1.amazonaws.com
+http://udapeople-21b01.s3-website-us-east-1.amazonaws.com/
 
 [URL03]
-d2qhm11sj8o249.cloudfront.net	
+http://udapeople-21b01.s3-website-us-east-1.amazonaws.com
 
 [URL04]
-http://52.6.226.232:3030/api/status
+http://54.236.24.227:3030/api/status
 
 [URL05]
 http://100.25.102.13:9090/targets?search=
