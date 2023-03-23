@@ -260,8 +260,8 @@ jobs:
             npm install
             # npm update
             npm run build:prod
-            aws s3 sync dist s3://udapeople-udapeople-a9f90                #${CIRCLE_WORKFLOW_ID:0:5}
-            aws s3 cp dist s3://udapeople-udapeople-a9f90 --recursive
+            aws s3 sync dist s3://udapeople-a9f90                #${CIRCLE_WORKFLOW_ID:0:5}
+            aws s3 cp dist s3://udapeople-a9f90 --recursive
 
   deploy-backend:
     docker:
