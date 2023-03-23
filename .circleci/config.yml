@@ -15,7 +15,7 @@ commands:
           name: Destroy environment
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
+            aws s3 rm s3://udapeople-a9f90  --recursive
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}
 
@@ -46,7 +46,7 @@ commands:
           command: |
             # echo ${KVDB_BUCKET}
             # echo ${CIRCLE_WORKFLOW_ID:0:5}
-            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:5})
+            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_a9f90)
             echo "$SUCCESS"
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
