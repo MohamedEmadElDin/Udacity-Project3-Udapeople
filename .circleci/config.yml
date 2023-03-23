@@ -15,7 +15,7 @@ commands:
           name: Destroy environment
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-a9f90  --recursive
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5}  --recursive
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:5}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}
 
@@ -46,7 +46,7 @@ commands:
           command: |
             # echo ${KVDB_BUCKET}
             # echo ${CIRCLE_WORKFLOW_ID:0:5}
-            SUCCESS=$(curl --insecure https://kvdb.io/S7hR6EG6AJEiYAEzRWnys3/)
+            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:5})
             echo "$SUCCESS"
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
@@ -260,8 +260,8 @@ jobs:
             npm install
             # npm update
             npm run build:prod
-            aws s3 sync dist s3://udapeople-a9f90                #${CIRCLE_WORKFLOW_ID:0:5}
-            aws s3 cp dist s3://udapeople-a9f90 --recursive
+            aws s3 sync dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5}
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
 
   deploy-backend:
     docker:
@@ -302,8 +302,8 @@ jobs:
           name: Backend smoke test.
           command: |
             export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            # URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
-            URL="http://$BACKEND_PUBLICIP:3030/api/status"
+            URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
+            # URL="http://$BACKEND_PUBLICIP:3030/api/status"
             if curl -s --head ${URL}
             then
               echo "It worked!"
@@ -314,7 +314,7 @@ jobs:
             fi
       - notify_on_failure
       # - destroy_environment
-      - revert-migrations
+      # - revert-migrations
 
   cloudfront-update:
     docker:
@@ -362,32 +362,32 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [deploy-infrastructure]
-      # - deploy-backend:
-          # requires: [run-migrations]
-      - smoke-test
-      #     requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [deploy-infrastructure]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
