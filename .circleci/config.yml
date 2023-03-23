@@ -46,7 +46,7 @@ commands:
           command: |
             # echo ${KVDB_BUCKET}
             # echo ${CIRCLE_WORKFLOW_ID:0:5}
-            SUCCESS=$(curl --insecure https://kvdb.io/S7hR6EG6AJEiYAEzRWnys3/
+            SUCCESS=$(curl --insecure https://kvdb.io/S7hR6EG6AJEiYAEzRWnys3/)
             echo "$SUCCESS"
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
