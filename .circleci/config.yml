@@ -46,7 +46,7 @@ commands:
           command: |
             # echo ${KVDB_BUCKET}
             # echo ${CIRCLE_WORKFLOW_ID:0:5}
-            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_a9f90)
+            SUCCESS=$(curl --insecure https://kvdb.io/S7hR6EG6AJEiYAEzRWnys3/
             echo "$SUCCESS"
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
@@ -313,7 +313,7 @@ jobs:
               exit 1
             fi
       - notify_on_failure
-      - destroy_environment
+      # - destroy_environment
       - revert-migrations
 
   cloudfront-update:
@@ -385,9 +385,9 @@ workflows:
       #     requires: [deploy-infrastructure]
       # - deploy-backend:
           # requires: [run-migrations]
-      # - smoke-test:
+      - smoke-test
       #     requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
