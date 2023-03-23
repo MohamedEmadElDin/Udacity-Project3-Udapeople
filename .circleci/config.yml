@@ -302,8 +302,8 @@ jobs:
           name: Backend smoke test.
           command: |
             export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
-            # URL="http://$BACKEND_PUBLICIP:3030/api/status"
+            # URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
+            URL="http://$BACKEND_PUBLICIP:3030/api/status"
             if curl -s --head ${URL}
             then
               echo "It worked!"
@@ -313,8 +313,8 @@ jobs:
               exit 1
             fi
       - notify_on_failure
-      # - destroy_environment
-      # - revert-migrations
+      - destroy_environment
+      - revert-migrations
 
   cloudfront-update:
     docker:
@@ -335,7 +335,7 @@ jobs:
             aws cloudformation deploy \
                       --template-file .circleci/files/cloudfront.yml \
                       --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:5}" \
-                      --stack-name InitialStack-$OLD_WORKFLOW_ID
+                      --stack-name InitialStack
                       --tags project=udapeople
 
   cleanup:
@@ -385,9 +385,9 @@ workflows:
       #     requires: [deploy-infrastructure]
       # - deploy-backend:
           # requires: [run-migrations]
-      # - smoke-test:
+      - smoke-test
       #     requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update
+      - cloudfront-update:
           # requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
